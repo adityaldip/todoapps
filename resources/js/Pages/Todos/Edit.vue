@@ -23,6 +23,46 @@
         ></textarea>
       </div>
       <div class="mb-4">
+        <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
+        <select 
+          v-model="form.priority"
+          id="priority"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
+        <input 
+          type="date"
+          v-model="form.due_date"
+          id="due_date"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div class="mb-4">
+        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+        <select 
+          v-model="form.status"
+          id="status"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        >
+          <option value="todo">Todo</option>
+          <option value="in_progress">In Progress</option>
+          <option value="review">Review</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
         <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
         <select 
           v-model="form.tags"
@@ -56,9 +96,18 @@ export default {
   },
   
   setup(props) {
+    // Format the date to YYYY-MM-DD for the date input
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toISOString().split('T')[0];
+    };
+
     const form = useForm({
       title: props.todo.title,
       description: props.todo.description,
+      priority: props.todo.priority,
+      due_date: formatDate(props.todo.due_date),
+      status: props.todo.status,
       tags: props.selectedTags,
     })
 

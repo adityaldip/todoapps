@@ -40,15 +40,28 @@ class TodoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'priority' => 'required|in:low,medium,high',
+            'due_date' => 'required|date',
+            'status' => 'required|in:todo,in_progress,review,done',
             'tags' => 'array',
             'tags.*' => 'exists:tags,id',
         ]);
+    
+        // Separate tags from validated data since we'll attach them separately
+        $tags = $validated['tags'] ?? [];
+        unset($validated['tags']);
+    
+        // Create todo with validated data
         $todo = Todo::create($validated);
-        $todo->tags()->attach($request->tags);
+        
+        // Attach tags if any
+        if (!empty($tags)) {
+            $todo->tags()->attach($tags);
+        }
     
         return redirect()->route('todos.index')->with('success', 'Todo created successfully.');
     }
-
+    
     /**
      * Display the specified resource.
      */
@@ -81,15 +94,26 @@ class TodoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'priority' => 'required|in:low,medium,high',
+            'due_date' => 'required|date',
+            'status' => 'required|in:todo,in_progress,review,done',
             'tags' => 'array',
             'tags.*' => 'exists:tags,id',
         ]);
     
+        // Separate tags from validated data
+        $tags = $validated['tags'] ?? [];
+        unset($validated['tags']);
+    
+        // Update todo
         $todo->update($validated);
-        $todo->tags()->sync($request->tags);
+        
+        // Sync tags
+        $todo->tags()->sync($tags);
     
         return redirect()->route('todos.index')->with('success', 'Todo updated successfully.');
     }
+    
 
     /**
      * Remove the specified resource from storage.
@@ -109,6 +133,19 @@ class TodoController extends Controller
     
         $todo->comments()->create($validated);
     
+        return redirect()->back();
+    }
+
+    public function updateComponent(Request $request, Todo $todo)
+    {
+        $validated = $request->validate([
+            'priority' => ['sometimes', 'required', 'in:high,medium,low'],
+            'status' => ['sometimes', 'required', 'in:todo,in_progress,review,done'],
+            'due_date' => ['sometimes', 'required', 'date'],
+        ]);
+
+        $todo->update($validated);
+
         return redirect()->back();
     }
 

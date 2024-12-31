@@ -33,5 +33,6 @@ Route::resource('/', TodoController::class);
 Route::resource('tags', TagController::class);
 Route::post('/todos/{todo}/comments', [TodoController::class, 'addComment']);
 Route::delete('/todos/{todo}/comments/{comment}', [CommentController::class, 'destroy']);
+Route::patch('/todos/{todo}', [TodoController::class, 'updateComponent'])->name('todos.updateComponent');
 
 require __DIR__.'/auth.php';

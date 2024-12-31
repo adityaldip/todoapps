@@ -23,6 +23,46 @@
         ></textarea>
       </div>
       <div class="mb-4">
+        <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
+        <select 
+          v-model="form.priority"
+          id="priority"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
+        <input 
+          type="date"
+          v-model="form.due_date"
+          id="due_date"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
+
+      <div class="mb-4">
+        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+        <select 
+          v-model="form.status"
+          id="status"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        >
+          <option value="todo">Todo</option>
+          <option value="in_progress">In Progress</option>
+          <option value="review">Review</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
         <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
         <div class="flex gap-2 mb-2">
           <input 
@@ -73,6 +113,9 @@ export default {
     const form = useForm({
       title: '',
       description: '',
+      priority: 'low',
+      due_date: '',
+      status: 'todo',
       tags: [],
     })
 
@@ -81,15 +124,11 @@ export default {
       if (!newTag.value) return
 
       try {
-        // Assuming you have an API endpoint to create tags
         const response = await axios.post('/tags', {
           name: newTag.value
         })
         
-        // Add the new tag to the existing tags list
         props.tags.push(response.data)
-        
-        // Clear the input
         newTag.value = ''
       } catch (error) {
         console.error('Error creating tag:', error)
