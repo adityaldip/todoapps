@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Todo;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use App\Models\Comment;
 
 class TodoController extends Controller
 {
@@ -99,4 +100,16 @@ class TodoController extends Controller
     
         return redirect()->route('todos.index')->with('success', 'Todo deleted successfully.');
     }
+
+    public function addComment(Request $request, Todo $todo)
+    {
+        $validated = $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+    
+        $todo->comments()->create($validated);
+    
+        return redirect()->back();
+    }
+
 }

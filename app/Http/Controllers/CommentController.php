@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use App\Models\Todo;
+use App\Models\Tag;
 
 class CommentController extends Controller
 {
@@ -58,8 +60,10 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment)
-    {
-        //
-    }
+
+     public function destroy(Todo $todo, Comment $comment)
+     {
+         $comment->delete();
+         return redirect()->back();
+     }
 }

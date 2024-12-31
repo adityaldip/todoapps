@@ -5,15 +5,18 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\TodoController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\CommentController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -26,5 +29,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('todos', TodoController::class);
+Route::resource('/', TodoController::class);
+Route::resource('tags', TagController::class);
+Route::post('/todos/{todo}/comments', [TodoController::class, 'addComment']);
+Route::delete('/todos/{todo}/comments/{comment}', [CommentController::class, 'destroy']);
 
 require __DIR__.'/auth.php';
