@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Todo;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
@@ -12,7 +13,11 @@ class TodoController extends Controller
      */
     public function index()
     {
-        //
+        $todos = Todo::with('tags', 'comments')->latest()->get();
+    
+        return inertia('Todos/Index', [
+            'todos' => $todos,
+        ]);
     }
 
     /**
@@ -20,7 +25,10 @@ class TodoController extends Controller
      */
     public function create()
     {
-        //
+        $tags = Tag::all();
+        return inertia('Todos/Create', [
+            'tags' => $tags,
+        ]);
     }
 
     /**
@@ -28,7 +36,16 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'tags' => 'array',
+            'tags.*' => 'exists:tags,id',
+        ]);
+        $todo = Todo::create($validated);
+        $todo->tags()->attach($request->tags);
+    
+        return redirect()->route('todos.index')->with('success', 'Todo created successfully.');
     }
 
     /**
@@ -44,15 +61,33 @@ class TodoController extends Controller
      */
     public function edit(Todo $todo)
     {
-        //
+        $tags = Tag::all();
+        $selectedTags = $todo->tags->pluck('id');
+    
+        return inertia('Todos/Edit', [
+            'todo' => $todo,
+            'tags' => $tags,
+            'selectedTags' => $selectedTags,
+        ]);
     }
+    
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Todo $todo)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'tags' => 'array',
+            'tags.*' => 'exists:tags,id',
+        ]);
+    
+        $todo->update($validated);
+        $todo->tags()->sync($request->tags);
+    
+        return redirect()->route('todos.index')->with('success', 'Todo updated successfully.');
     }
 
     /**
@@ -60,6 +95,8 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        //
+        $todo->delete();
+    
+        return redirect()->route('todos.index')->with('success', 'Todo deleted successfully.');
     }
 }
